@@ -16,7 +16,7 @@ def get_user(id):
 def get_users():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 10, type=int), 100)
-    data = User.to_collection_dict(User.query, page, per_page, 'api.get_users')
+    data = User.to_collection_dict(User.query, page, per_page, 'get_users')
     return jsonify(data)
 
 # Übernommen aus den Beispielen von Miguel Grinberg
@@ -27,7 +27,7 @@ def get_followers(id):
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 10, type=int), 100)
     data = User.to_collection_dict(user.followers, page, per_page,
-                                   'api.get_followers', id=id)
+                                   'get_followers', id=id)
     return jsonify(data)
 
 # Übernommen aus den Beispielen von Miguel Grinberg
@@ -38,7 +38,7 @@ def get_followed(id):
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 10, type=int), 100)
     data = User.to_collection_dict(user.followed, page, per_page,
-                                   'api.get_followed', id=id)
+                                   'get_followed', id=id)
     return jsonify(data)
 
 # Übernommen aus den Beispielen von Miguel Grinberg
@@ -57,7 +57,7 @@ def create_user():
     db.session.commit()
     response = jsonify(user.to_dict())
     response.status_code = 201
-    response.headers['Location'] = url_for('api.get_user', id=user.id)
+    response.headers['Location'] = url_for('get_user', id=user.id)
     return response
 
 # Übernommen aus den Beispielen von Miguel Grinberg
