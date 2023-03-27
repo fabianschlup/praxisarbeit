@@ -9,10 +9,14 @@
     </head>
     <body>
         <div>
-            Site by Fabian Schlup:
+            Todos:
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('explore') }}">Explore</a>
             <a href="{{ url_for('todos') }}">Todos</a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin_users') }}">Useradmin</a>
+            <a href="{{ url_for('admin_posts') }}">Post Admin</a>
+            {% endif %}
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
             {% else %}
