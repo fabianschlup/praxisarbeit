@@ -203,3 +203,68 @@ def unfollow(username):
         return redirect(url_for('user', username=username))
     else:
         return redirect(url_for('index'))
+
+# Eigenentwicklung
+@app.route('/admin_posts')
+@login_required
+def admin_posts():
+    # Check if the user is an admin or not and abort with 403 if not
+    if current_user.is_admin is False:
+        abort(403)
+    users = User.query.all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    next_url = url_for('admin_posts', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('admin_posts', page=posts.prev_num) \
+        if posts.has_prev else None
+    return render_template('admin_posts.html', title='Admin Posts', posts=posts.items, current_user=current_user, users=users,
+                           next_url=next_url, prev_url=prev_url)
+
+@app.route('/admin_delete_post/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_post(id):
+    # Check if the user is an admin or not and abort with 403 if not
+    post = Post.query.get_or_404(id)
+    if current_user.is_admin is False:
+            abort(403)
+    
+    # Delete the user from the database
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted.')
+    return redirect(url_for('admin_posts'))
+
+
+# Eigenentwicklung
+@app.route('/admin_users')
+@login_required
+def admin_users():
+    # Check if the user is an admin or not and abort with 403 if not
+    if current_user.is_admin is False:
+        abort(403)
+    page = request.args.get('page', 1, type=int)
+    users = User.query.order_by(User.id.desc()).paginate(
+        page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    next_url = url_for('admin_users', username=current_user.username, page=users.next_num) \
+        if users.has_next else None
+    prev_url = url_for('admin_users', username=current_user.username, page=users.prev_num) \
+        if users.has_prev else None
+    return render_template('admin_users.html', title='Users Admin', current_user=current_user, users=users,
+                           next_url=next_url, prev_url=prev_url)
+
+# Eigenentwicklung
+@app.route('/admin_delete_user/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_user(id):
+    # Check if the user is an admin or not and abort with 403 if not
+    user = User.query.get_or_404(id)
+    if current_user.is_admin is False:
+            abort(403)
+    
+    # Delete the user from the database
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted.')
+    return redirect(url_for('admin_users'))
