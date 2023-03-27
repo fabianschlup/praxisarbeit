@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>All Tasks</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>User</th>
+                <th>Assigned To</th>
+                <th>Edit Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for todo in todos %}
+                <tr>
+                    <td>{{ todo.task }}</td>
+                    <td>{{ todo.due_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ todo.status }}</td>
+                    {% for user in users %}
+                    {% if user.id == todo.user_id %}
+                      <td>{{ user.username }}</td>
+                    {% endif %}
+                    {% if user.id == todo.assigned_to_id %}
+                      <td>{{ user.username }}</td>
+                    {% endif %}
+                    {% endfor %}
+                    {% if current_user.id == todo.assigned_to_id %}
+                    <td><a class="btn btn-secondary" href="{{ url_for('edit_todo_status', todo_id=todo.id) }}">Edit Status</a></td>
+                    {% else %}
+                    <td>Not your Todo</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if todo_form %}
+    <form action="" method="post">
+        {{ todo_form.hidden_tag() }}
+        <div class="form-group">
+            {{ todo_form.task.label }}<br>
+            {{ todo_form.task(class="form-control") }}<br>
+            {% for error in todo_form.task.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ todo_form.due_date.label(class="form-label") }}<br>
+            {{ todo_form.due_date(class="form-control") }}<br>
+            {% for error in todo_form.due_date.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ todo_form.status.label }}<br>
+            {{ todo_form.status(class="form-control") }}<br>
+            {% for error in todo_form.status.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ todo_form.assigned_to.label }}<br>
+            <select class="form-control" multiple="multiple" name="assigned_to">
+                {% for user in users %}
+                  <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+              </select><br>
+            {% for error in todo_form.assigned_to.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ todo_form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    {% endif %}
+{% endblock %}
