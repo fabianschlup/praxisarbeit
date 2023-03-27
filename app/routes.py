@@ -222,6 +222,7 @@ def admin_posts():
     return render_template('admin_posts.html', title='Admin Posts', posts=posts.items, current_user=current_user, users=users,
                            next_url=next_url, prev_url=prev_url)
 
+# Eigenentwicklung
 @app.route('/admin_delete_post/<int:id>', methods=['POST'])
 @login_required
 def admin_delete_post(id):
@@ -268,3 +269,35 @@ def admin_delete_user(id):
     db.session.commit()
     flash('User deleted.')
     return redirect(url_for('admin_users'))
+
+# Eigenentwicklung
+@app.route('/admin_todos')
+@login_required
+def admin_todos():
+    # Check if the user is an admin or not and abort with 403 if not
+    if current_user.is_admin is False:
+        abort(403)
+    page = request.args.get('page', 1, type=int)
+    todos = Todo.query.order_by(Todo.id.desc()).paginate(
+        page=page, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    next_url = url_for('admin_todos', username=current_user.username, page=todos.next_num) \
+        if todos.has_next else None
+    prev_url = url_for('admin_todos', username=current_user.username, page=todos.prev_num) \
+        if todos.has_prev else None
+    return render_template('admin_todos.html', title='Todos Admin', current_user=current_user, todos=todos,
+                           next_url=next_url, prev_url=prev_url)
+
+# Eigenentwicklung
+@app.route('/admin_delete_todo/<int:id>', methods=['POST'])
+@login_required
+def admin_delete_todo(id):
+    # Check if the user is an admin or not and abort with 403 if not
+    todo = Todo.query.get_or_404(id)
+    if current_user.is_admin is False:
+            abort(403)
+    
+    # Delete the user from the database
+    db.session.delete(todo)
+    db.session.commit()
+    flash('Todo deleted.')
+    return redirect(url_for('admin_todos'))
