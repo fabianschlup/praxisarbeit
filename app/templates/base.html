@@ -16,6 +16,7 @@
             {% if current_user.is_admin %}
             <a href="{{ url_for('admin_users') }}">Useradmin</a>
             <a href="{{ url_for('admin_posts') }}">Post Admin</a>
+            <a href="{{ url_for('admin_todos') }}">Todos Admin</a>
             {% endif %}
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
