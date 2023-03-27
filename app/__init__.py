@@ -19,7 +19,7 @@ migrate = Migrate(app, db)
 
 ## Initialize LoginManager
 login = LoginManager(app)
-login.login_view = 'auth.login'
+login.login_view = 'login'
 login.login_message = ('Please log in to access this page.')
 
 # Übernommen aus den Beispielen von Miguel Grinberg
